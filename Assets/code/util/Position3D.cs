@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace code.util
@@ -13,6 +14,38 @@ namespace code.util
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public IEnumerable<Position3D> GetPositionsInCubeRadius(int radius)
+        {
+            var posistions = new List<Position3D>();
+
+            for (var deltaX = -radius; deltaX <= radius; deltaX++)
+            for (var deltaY = -radius; deltaY <= radius; deltaY++)
+            for (var deltaZ = -radius; deltaZ <= radius; deltaZ++)
+                posistions.Add(new Position3D(x + deltaX, y + deltaY, z + deltaZ));
+
+            return posistions;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var position = obj as Position3D;
+
+            if (position == null)
+                return false;
+
+            return x == position.x && y == position.y && z == position.z;
+        }
+
+        public override int GetHashCode()
+        {
+            return 137 * x + 149 * y + 163 * z;
+        }
+
+        public override string ToString()
+        {
+            return "{x: " + x + ", y: " + y + ", z: " + z + "}";
         }
 
         public int x { get; set; }

@@ -1,4 +1,6 @@
-﻿using code.terrain;
+﻿using code.map;
+using code.terrain;
+using code.util;
 using UnityEngine;
 
 namespace code.objectscript
@@ -9,10 +11,12 @@ namespace code.objectscript
         private const float CameraRotationSpeed = 75f;
 
         private Camera _playerCamera;
+        private Rigidbody _playerRigidbody;
         
         private void Start()
         {
             _playerCamera = transform.Find("player camera").GetComponent<Camera>();
+            _playerRigidbody = GetComponent<Rigidbody>();
             
             var playerPosition = new Vector3
             {
@@ -23,8 +27,52 @@ namespace code.objectscript
 
             transform.position = playerPosition;
         }
-
+        
         private void FixedUpdate()
+        {
+            UpdatePlayerFromMovementInput();
+            UpdatePlayerFromViewRotation();
+            RenderChunksNearPlayer();
+        }
+        
+        private bool IsGrounded()
+        {
+            return Physics.Raycast(transform.position, -Vector3.up, 10.1f);
+        }
+
+        private void RenderChunksNearPlayer()
+        {
+            var playerChunkPosition = GetPlayerChunkPosition();
+
+            foreach (var chunkPositions in playerChunkPosition.GetPositionsInCubeRadius(1))
+                Map.Instance.RenderChunkIfNotAlreadyRendered(chunkPositions);
+        }
+
+        private Position3D GetPlayerChunkPosition()
+        {
+            var chunkPositionX = Mathf.FloorToInt(transform.position.x / (Chunk.ChunkSize.x * Tile.TileSize.x));
+            var chunkPositionY = Mathf.FloorToInt(transform.position.y / (Chunk.ChunkSize.y * Tile.TileSize.y));
+            var chunkPositionZ = Mathf.FloorToInt(transform.position.z / (Chunk.ChunkSize.z * Tile.TileSize.z));
+            
+            return new Position3D(chunkPositionX, chunkPositionY, chunkPositionZ);
+        }
+
+        private void UpdatePlayerFromViewRotation()
+        {
+            if (Input.GetKey(KeyCode.LeftArrow))
+                transform.Rotate(Vector3.up * Time.deltaTime * -CameraRotationSpeed);
+
+            if (Input.GetKey(KeyCode.RightArrow))
+                transform.Rotate(Vector3.up * Time.deltaTime * CameraRotationSpeed);
+
+            if (Input.GetKey(KeyCode.UpArrow))
+                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * -CameraRotationSpeed);
+
+            if (Input.GetKey(KeyCode.DownArrow))
+                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * CameraRotationSpeed);
+        }
+
+        private void UpdatePlayerFromMovementInput()
         {
             if (Input.GetKey(KeyCode.W))
                 transform.Translate(Vector3.forward * Time.deltaTime * 10);
@@ -37,24 +85,9 @@ namespace code.objectscript
 
             if (Input.GetKey(KeyCode.D))
                 transform.Translate(Vector3.right * Time.deltaTime * 10);
-
-            if (Input.GetKey(KeyCode.Space))
-                transform.Translate(Vector3.up * Time.deltaTime * 10);
-
-            if (Input.GetKey(KeyCode.LeftControl))
-                transform.Translate(Vector3.down * Time.deltaTime * 10);
-
-            if (Input.GetKey(KeyCode.LeftArrow))
-                transform.Rotate(Vector3.up * Time.deltaTime * -CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.RightArrow))
-                transform.Rotate(Vector3.up * Time.deltaTime * CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.UpArrow))
-                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * -CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.DownArrow))
-                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * CameraRotationSpeed);
+            
+            if (Input.GetKey(KeyCode.Space) && IsGrounded())
+                _playerRigidbody.velocity = new Vector3(_playerRigidbody.velocity.x, _playerRigidbody.velocity.y + 15, _playerRigidbody.velocity.z);
         }
     }
 }

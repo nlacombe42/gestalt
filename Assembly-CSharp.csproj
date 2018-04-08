@@ -52,16 +52,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\code\map\Map.cs" />
+    <Compile Include="Assets\code\objectscript\GameObjectScript.cs" />
     <Compile Include="Assets\code\objectscript\PlayerObjectScript.cs" />
-    <Compile Include="Assets\code\objectscript\StartGameObjectScript.cs" />
     <Compile Include="Assets\code\terrain\Chunk.cs" />
-    <Compile Include="Assets\code\terrain\ChunkUnityInfo.cs" />
     <Compile Include="Assets\code\terrain\CubeGenerator.cs" />
     <Compile Include="Assets\code\terrain\TerrainGenerator.cs" />
     <Compile Include="Assets\code\terrain\Tile.cs" />
+    <Compile Include="Assets\code\util\EnumerableUtil.cs" />
     <Compile Include="Assets\code\util\GeometryUtil.cs" />
     <Compile Include="Assets\code\util\Perlin.cs" />
     <Compile Include="Assets\code\util\Position3D.cs" />
+    <Compile Include="Assets\code\util\UnityMeshInfo.cs" />
     <Reference Include="UnityEngine.UI">
       <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
     </Reference>
@@ -124,6 +126,9 @@
     </Reference>
     <Reference Include="UnityEditor.LinuxStandalone.Extensions">
       <HintPath>/opt/Unity/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Rider.Unity.Editor.Plugin.Repacked">
+      <HintPath>/home/nlacombe/prog/git/ponos/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Advertisements">
       <HintPath>/home/nlacombe/.config/unity3d/cache/packages/packages.unity.com/com.unity.ads@2.0.3/UnityEngine.Advertisements.dll</HintPath>
