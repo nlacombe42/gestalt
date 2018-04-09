@@ -43,7 +43,7 @@ namespace code.terrain
 
             for (var x = 0; x < heightMap.GetLength(0); x++)
             for (var z = 0; z < heightMap.GetLength(1); z++)
-                heightMap[x, z] = TerrainGenerator.getHeight(chunkPosition.x + x, chunkPosition.z + z);
+                heightMap[x, z] = TerrainGenerator.getHeight(chunkPosition.x * ChunkSize.x + x, chunkPosition.z * ChunkSize.z + z);
 
             return heightMap;
         }

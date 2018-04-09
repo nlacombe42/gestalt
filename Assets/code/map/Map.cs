@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using code.objectscript;
 using code.terrain;
 using code.util;
+using UnityEngine;
 
 namespace code.map
 {
@@ -9,11 +11,11 @@ namespace code.map
     {
         private static Map _instance;
 
-        private List<Position3D> _renderedChunks;
+        private Dictionary<Position3D, GameObject> _renderedChunks;
 
         public Map()
         {
-            _renderedChunks = new List<Position3D>();
+            _renderedChunks = new Dictionary<Position3D, GameObject>();
         }
 
         public static Map Instance
@@ -21,17 +23,31 @@ namespace code.map
             get { return _instance ?? (_instance = new Map()); }
         }
 
-        public void RenderChunkIfNotAlreadyRendered(Position3D chunkPosition)
+        public void Render(List<Position3D> chunkPositionsToRender)
         {
-            if (_renderedChunks.Contains(chunkPosition))
-                return;
-
-            var chunkTerrainUnityMeshInfo = Chunk.GetChunkTerrainUnityMeshInfo(chunkPosition);
-
-            if (chunkTerrainUnityMeshInfo.Triangles.Length > 0)
-                GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
+            var chunkPositionsToCreate = chunkPositionsToRender.Where(chunkPositionToRender => !_renderedChunks.ContainsKey(chunkPositionToRender));
             
-            _renderedChunks.Add(chunkPosition);
+            foreach (var chunkPosition in chunkPositionsToCreate)
+            {
+                var chunkTerrainUnityMeshInfo = Chunk.GetChunkTerrainUnityMeshInfo(chunkPosition);
+                
+                if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
+                    continue;
+
+                var gameObject = GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
+
+                _renderedChunks.Add(chunkPosition, gameObject);
+            }
+
+            var chunkPositionsToDelete = _renderedChunks
+                .Where(renderedChunkPair => !chunkPositionsToRender.Contains(renderedChunkPair.Key))
+                .Select(renderedChunkPair => renderedChunkPair.Key).ToList();
+
+            foreach (var chunkPositionToDelete in chunkPositionsToDelete)
+            {
+                Object.Destroy(_renderedChunks[chunkPositionToDelete]);
+                _renderedChunks.Remove(chunkPositionToDelete);
+            }
         }
     }
 }

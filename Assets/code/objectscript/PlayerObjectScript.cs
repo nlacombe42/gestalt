@@ -1,4 +1,5 @@
-﻿using code.map;
+﻿using System.Linq;
+using code.map;
 using code.terrain;
 using code.util;
 using UnityEngine;
@@ -12,12 +13,12 @@ namespace code.objectscript
 
         private Camera _playerCamera;
         private Rigidbody _playerRigidbody;
-        
+
         private void Start()
         {
             _playerCamera = transform.Find("player camera").GetComponent<Camera>();
             _playerRigidbody = GetComponent<Rigidbody>();
-            
+
             var playerPosition = new Vector3
             {
                 x = 12 * Tile.TileSize.x + Tile.TileSize.x / 2,
@@ -27,14 +28,14 @@ namespace code.objectscript
 
             transform.position = playerPosition;
         }
-        
+
         private void FixedUpdate()
         {
             UpdatePlayerFromMovementInput();
             UpdatePlayerFromViewRotation();
             RenderChunksNearPlayer();
         }
-        
+
         private bool IsGrounded()
         {
             return Physics.Raycast(transform.position, -Vector3.up, 10.1f);
@@ -44,8 +45,7 @@ namespace code.objectscript
         {
             var playerChunkPosition = GetPlayerChunkPosition();
 
-            foreach (var chunkPositions in playerChunkPosition.GetPositionsInCubeRadius(1))
-                Map.Instance.RenderChunkIfNotAlreadyRendered(chunkPositions);
+            Map.Instance.Render(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
         }
 
         private Position3D GetPlayerChunkPosition()
@@ -53,7 +53,7 @@ namespace code.objectscript
             var chunkPositionX = Mathf.FloorToInt(transform.position.x / (Chunk.ChunkSize.x * Tile.TileSize.x));
             var chunkPositionY = Mathf.FloorToInt(transform.position.y / (Chunk.ChunkSize.y * Tile.TileSize.y));
             var chunkPositionZ = Mathf.FloorToInt(transform.position.z / (Chunk.ChunkSize.z * Tile.TileSize.z));
-            
+
             return new Position3D(chunkPositionX, chunkPositionY, chunkPositionZ);
         }
 
@@ -85,7 +85,7 @@ namespace code.objectscript
 
             if (Input.GetKey(KeyCode.D))
                 transform.Translate(Vector3.right * Time.deltaTime * 10);
-            
+
             if (Input.GetKey(KeyCode.Space) && IsGrounded())
                 _playerRigidbody.velocity = new Vector3(_playerRigidbody.velocity.x, _playerRigidbody.velocity.y + 15, _playerRigidbody.velocity.z);
         }
