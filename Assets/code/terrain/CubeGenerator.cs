@@ -23,17 +23,11 @@ namespace code.terrain
             addUv(uvs, 1, 1, true);
         }
 
-        private static void addUv(List<Vector2> uvs, float texturePercentPositionU, float texturePercentPositionV)
+        private static void addUv(List<Vector2> uvs, float texturePercentPositionU, float texturePercentPositionV, bool grass = false)
         {
-            addUv(uvs, texturePercentPositionU, texturePercentPositionV, false);
-        }
-        
-        private static void addUv(List<Vector2> uvs, float texturePercentPositionU, float texturePercentPositionV, bool grass)
-        {
-            if(grass)
-                uvs.Add(new Vector2(texturePercentPositionU / 2 + 0.5f, texturePercentPositionV / 2 + 0.5f));
-            else
-                uvs.Add(new Vector2(texturePercentPositionU / 2, texturePercentPositionV / 2 + 0.5f));
+            uvs.Add(grass
+                ? new Vector2(texturePercentPositionU / 2 + 0.5f, texturePercentPositionV / 2 + 0.5f)
+                : new Vector2(texturePercentPositionU / 2, texturePercentPositionV / 2 + 0.5f));
         }
 
         public static void AddSquareFaceYNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)

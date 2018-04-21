@@ -1,4 +1,5 @@
 using AssemblyCSharp;
+using code.util;
 using UnityEngine;
 
 namespace code.terrain
@@ -7,7 +8,11 @@ namespace code.terrain
     {
         public static int getHeight(int tilePositionX, int tilePositionZ)
         {
-            return Mathf.FloorToInt(Perlin.CalcPixel2D(tilePositionX, tilePositionZ, 0.05f) / 255 * Tile.TileSize.y);
+            var perlinRand = Perlin.CalcPixel2D(tilePositionX, tilePositionZ, 0.02f) / 255;
+            var expRand = Mathf.Abs(Noise.ExpRand(perlinRand, 0.375f));
+            var height = Mathf.FloorToInt(expRand * Tile.TileSize.y);
+
+            return height < 1 ? 1 : height;
         }
     }
 }
