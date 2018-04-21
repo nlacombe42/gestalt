@@ -20,15 +20,43 @@ namespace code.objectscript
             _playerRigidbody = GetComponent<Rigidbody>();
 
             Cursor.lockState = CursorLockMode.Locked;
-            
+
             SetPlayerInitialPosition();
         }
         
+        private void Update ()
+        {
+            HandlePlayerClick();
+            RenderChunksNearPlayer();
+        }
+
         private void FixedUpdate()
         {
             UpdatePlayerFromMovementInput();
             UpdatePlayerFromViewRotation();
-            RenderChunksNearPlayer();
+        }
+
+        private void HandlePlayerClick()
+        {
+            if (!Input.GetMouseButtonDown(0))
+                return;
+            
+            var ray = _playerCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (!Physics.Raycast(ray, out hit))
+                return;
+
+            var pointInTile = hit.point + ray.direction.normalized * (Tile.TileSize.x / 2);
+
+            var tilePosition = Map.GetTilePosition(pointInTile);
+
+            Map.Instance.setTileHeight(new Position2D(tilePosition.x, tilePosition.z), tilePosition.y - 1);
+        }
+
+        private void OnGUI()
+        {
+            GUI.Box(new Rect(Screen.width / 2f, Screen.height / 2f, 10, 10), "");
         }
 
         private void SetPlayerInitialPosition()
@@ -50,25 +78,16 @@ namespace code.objectscript
 
         private void RenderChunksNearPlayer()
         {
-            var playerChunkPosition = GetPlayerChunkPosition();
+            var playerChunkPosition = Map.GetChunkPosition(transform.position);
 
             Map.Instance.Render(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
         }
 
-        private Position3D GetPlayerChunkPosition()
-        {
-            var chunkPositionX = Mathf.FloorToInt(transform.position.x / (Chunk.ChunkSize.x * Tile.TileSize.x));
-            var chunkPositionY = Mathf.FloorToInt(transform.position.y / (Chunk.ChunkSize.y * Tile.TileSize.y));
-            var chunkPositionZ = Mathf.FloorToInt(transform.position.z / (Chunk.ChunkSize.z * Tile.TileSize.z));
-
-            return new Position3D(chunkPositionX, chunkPositionY, chunkPositionZ);
-        }
-
         private void UpdatePlayerFromViewRotation()
-        {   
+        {
             var mouseX = Input.GetAxis("Mouse X");
             var mouseY = -Input.GetAxis("Mouse Y");
- 
+
             _playerCamera.transform.Rotate(new Vector3(mouseY * MouseSensitivity * Time.deltaTime, 0, 0));
             transform.Rotate(new Vector3(0, mouseX * MouseSensitivity * Time.deltaTime, 0));
         }

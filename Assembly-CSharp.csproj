@@ -62,6 +62,7 @@
      <Compile Include="Assets\code\util\GeometryUtil.cs" />
      <Compile Include="Assets\code\util\Noise.cs" />
      <Compile Include="Assets\code\util\Perlin.cs" />
+     <Compile Include="Assets\code\util\Position2D.cs" />
      <Compile Include="Assets\code\util\Position3D.cs" />
      <Compile Include="Assets\code\util\UnityMeshInfo.cs" />
  <Reference Include="UnityEngine.UI">

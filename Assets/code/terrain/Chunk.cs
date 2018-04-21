@@ -9,10 +9,8 @@ namespace code.terrain
     {
         public static readonly Position3D ChunkSize = new Position3D(32, 32, 32);
 
-        public static UnityMeshInfo GetChunkTerrainUnityMeshInfo(Position3D chunkPosition)
+        public static UnityMeshInfo GetChunkTerrainUnityMeshInfo(int[,] heightMap, Position3D chunkPosition)
         {
-            var heightMap = GenerateHeightMap(chunkPosition);
-
             var vertices = new List<Vector3>();
             var uvs = new List<Vector2>();
             var triangles = new List<int>();
@@ -35,17 +33,6 @@ namespace code.terrain
         private static bool IsTileHeightInChunk(Position3D chunkPosition, int y)
         {
             return y > chunkPosition.y * ChunkSize.y && y < (chunkPosition.y + 1) * ChunkSize.y;
-        }
-
-        private static int[,] GenerateHeightMap(Position3D chunkPosition)
-        {
-            var heightMap = new int[ChunkSize.x, ChunkSize.z];
-
-            for (var x = 0; x < heightMap.GetLength(0); x++)
-            for (var z = 0; z < heightMap.GetLength(1); z++)
-                heightMap[x, z] = TerrainGenerator.getHeight(chunkPosition.x * ChunkSize.x + x, chunkPosition.z * ChunkSize.z + z);
-
-            return heightMap;
         }
     }
 }
