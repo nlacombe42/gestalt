@@ -9,7 +9,7 @@ namespace code.objectscript
     [RequireComponent(typeof(Transform))]
     public class PlayerObjectScript : MonoBehaviour
     {
-        private const float CameraRotationSpeed = 75f;
+        private const float MouseSensitivity = 100.0f;
 
         private Camera _playerCamera;
         private Rigidbody _playerRigidbody;
@@ -19,6 +19,20 @@ namespace code.objectscript
             _playerCamera = transform.Find("player camera").GetComponent<Camera>();
             _playerRigidbody = GetComponent<Rigidbody>();
 
+            Cursor.lockState = CursorLockMode.Locked;
+            
+            SetPlayerInitialPosition();
+        }
+        
+        private void FixedUpdate()
+        {
+            UpdatePlayerFromMovementInput();
+            UpdatePlayerFromViewRotation();
+            RenderChunksNearPlayer();
+        }
+
+        private void SetPlayerInitialPosition()
+        {
             var playerPosition = new Vector3
             {
                 x = 12 * Tile.TileSize.x + Tile.TileSize.x / 2,
@@ -27,13 +41,6 @@ namespace code.objectscript
             };
 
             transform.position = playerPosition;
-        }
-
-        private void FixedUpdate()
-        {
-            UpdatePlayerFromMovementInput();
-            UpdatePlayerFromViewRotation();
-            RenderChunksNearPlayer();
         }
 
         private bool IsGrounded()
@@ -58,18 +65,12 @@ namespace code.objectscript
         }
 
         private void UpdatePlayerFromViewRotation()
-        {
-            if (Input.GetKey(KeyCode.LeftArrow))
-                transform.Rotate(Vector3.up * Time.deltaTime * -CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.RightArrow))
-                transform.Rotate(Vector3.up * Time.deltaTime * CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.UpArrow))
-                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * -CameraRotationSpeed);
-
-            if (Input.GetKey(KeyCode.DownArrow))
-                _playerCamera.transform.Rotate(Vector3.right * Time.deltaTime * CameraRotationSpeed);
+        {   
+            var mouseX = Input.GetAxis("Mouse X");
+            var mouseY = -Input.GetAxis("Mouse Y");
+ 
+            _playerCamera.transform.Rotate(new Vector3(mouseY * MouseSensitivity * Time.deltaTime, 0, 0));
+            transform.Rotate(new Vector3(0, mouseX * MouseSensitivity * Time.deltaTime, 0));
         }
 
         private void UpdatePlayerFromMovementInput()
