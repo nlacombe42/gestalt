@@ -70,7 +70,7 @@ namespace code.map
             foreach (var chunkPosition in chunkPositionsToCreate)
             {
                 var heightMap = GenerateHeightMap(chunkPosition);
-                var chunkTerrainUnityMeshInfo = Chunk.GetChunkTerrainUnityMeshInfo(heightMap, chunkPosition);
+                var chunkTerrainUnityMeshInfo = Chunk.Instance.GetChunkTerrainUnityMeshInfo(heightMap, chunkPosition);
 
                 if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
                     continue;

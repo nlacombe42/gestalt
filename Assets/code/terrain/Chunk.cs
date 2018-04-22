@@ -1,15 +1,26 @@
 using System.Collections.Generic;
 using code.util;
 using UnityEngine;
-using Random = System.Random;
 
 namespace code.terrain
 {
-    public static class Chunk
+    public class Chunk
     {
         public static readonly Position3D ChunkSize = new Position3D(32, 32, 32);
 
-        public static UnityMeshInfo GetChunkTerrainUnityMeshInfo(int[,] heightMap, Position3D chunkPosition)
+        private static readonly Color Color = new Color(255, 255, 255);
+        private static Chunk _instance;
+
+        private Chunk()
+        {
+        }
+
+        public static Chunk Instance
+        {
+            get { return _instance ?? (_instance = new Chunk()); }
+        }
+
+        public UnityMeshInfo GetChunkTerrainUnityMeshInfo(int[,] heightMap, Position3D chunkPosition)
         {
             var vertices = new List<Vector3>();
             var uvs = new List<Vector2>();
@@ -24,13 +35,10 @@ namespace code.terrain
             var chunkTilePosition = chunkPosition * ChunkSize;
             var position = new Vector3(chunkTilePosition.x * Tile.TileSize.x, chunkTilePosition.y * Tile.TileSize.y, chunkTilePosition.z * Tile.TileSize.z);
 
-            var random = new Random();
-            var color = new Color(random.Next(255), random.Next(255), random.Next(255));
-
-            return new UnityMeshInfo(vertices.ToArray(), triangles.ToArray(), uvs.ToArray(), color, position);
+            return new UnityMeshInfo(vertices.ToArray(), triangles.ToArray(), uvs.ToArray(), Color, position);
         }
 
-        private static bool IsTileHeightInChunk(Position3D chunkPosition, int y)
+        private bool IsTileHeightInChunk(Position3D chunkPosition, int y)
         {
             return y > chunkPosition.y * ChunkSize.y && y < (chunkPosition.y + 1) * ChunkSize.y;
         }
