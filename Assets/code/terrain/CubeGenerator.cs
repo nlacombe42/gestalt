@@ -2,117 +2,110 @@
 using code.util;
 using UnityEngine;
 
-namespace code.terrain
+namespace code.map
 {
     public static class CubeGenerator
     {
-        public static void AddSquareFaceYPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
+        public static void AddSquareFaceYPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
-            addUv(uvs, 0, 0, true);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1, true);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
-            addUv(uvs, 1, 0, true);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
 
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
-            addUv(uvs, 0, 0, true);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
-            addUv(uvs, 0, 1, true);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1, true);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
         }
 
-        private static void addUv(List<Vector2> uvs, float texturePercentPositionU, float texturePercentPositionV, bool grass = false)
+        public static void AddSquareFaceYNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            uvs.Add(grass
-                ? new Vector2(texturePercentPositionU / 2 + 0.5f, texturePercentPositionV / 2 + 0.5f)
-                : new Vector2(texturePercentPositionU / 2, texturePercentPositionV / 2 + 0.5f));
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
+
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
         }
 
-        public static void AddSquareFaceYNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
+        public static void AddSquareFaceZNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
-            addUv(uvs, 1, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
-            addUv(uvs, 0, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
 
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
-            addUv(uvs, 1, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
-            addUv(uvs, 1, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
         }
 
-        public static void AddSquareFaceZNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
+        public static void AddSquareFaceZPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
-            addUv(uvs, 1, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
-            addUv(uvs, 1, 0);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
 
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
-            addUv(uvs, 0, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
-            addUv(uvs, 1, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
         }
 
-        public static void AddSquareFaceZPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
+        public static void AddSquareFaceXNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
-            addUv(uvs, 0, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
-            addUv(uvs, 1, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
 
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
-            addUv(uvs, 0, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
         }
 
-        public static void AddSquareFaceXNegative(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
+        public static void AddSquareFaceXPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize, Position2D textureTileOffset)
         {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, 0));
-            addUv(uvs, 1, 0);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
+            RenderUtil.addUv(uvs, 0, 1, textureTileOffset);
 
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, 0, tileSize.z));
-            addUv(uvs, 0, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(0, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
-        }
-
-        public static void AddSquareFaceXPositive(List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Vector3 cubePosition, Vector3 tileSize)
-        {
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, tileSize.z));
-            addUv(uvs, 0, 1);
-
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
-            addUv(uvs, 0, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
-            addUv(uvs, 1, 0);
-            GeometryUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
-            addUv(uvs, 1, 1);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, 0, 0));
+            RenderUtil.addUv(uvs, 0, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, 0));
+            RenderUtil.addUv(uvs, 1, 0, textureTileOffset);
+            RenderUtil.AddTriangleVertice(vertices, triangles, cubePosition + new Vector3(tileSize.x, tileSize.y, tileSize.z));
+            RenderUtil.addUv(uvs, 1, 1, textureTileOffset);
         }
     }
 }

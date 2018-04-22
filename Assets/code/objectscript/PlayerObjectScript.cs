@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using code.map;
-using code.terrain;
 using code.util;
 using UnityEngine;
 
@@ -49,9 +49,9 @@ namespace code.objectscript
 
             var pointInTile = hit.point + ray.direction.normalized * (Tile.TileSize.x / 2);
 
-            var tilePosition = Map.GetTilePosition(pointInTile);
+            var tilePosition = MapPositionUtil.GetTilePosition(pointInTile);
 
-            Map.Instance.setTileHeight(new Position2D(tilePosition.x, tilePosition.z), tilePosition.y - 1);
+            Map.Instance.SetTile(tilePosition, new Tile(TileType.Air));
         }
 
         private void OnGUI()
@@ -78,9 +78,9 @@ namespace code.objectscript
 
         private void RenderChunksNearPlayer()
         {
-            var playerChunkPosition = Map.GetChunkPosition(transform.position);
+            var playerChunkPosition = MapPositionUtil.GetChunkPosition(transform.position);
 
-            Map.Instance.Render(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
+            Chunk.Instance.Render(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
         }
 
         private void UpdatePlayerFromViewRotation()

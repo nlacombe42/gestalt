@@ -52,18 +52,20 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\code\map\Map.cs" />
+     <Compile Include="Assets\code\map\Tile.cs" />
+     <Compile Include="Assets\code\map\TileType.cs" />
      <Compile Include="Assets\code\objectscript\GameObjectScript.cs" />
      <Compile Include="Assets\code\objectscript\PlayerObjectScript.cs" />
      <Compile Include="Assets\code\terrain\Chunk.cs" />
      <Compile Include="Assets\code\terrain\CubeGenerator.cs" />
      <Compile Include="Assets\code\terrain\TerrainGenerator.cs" />
-     <Compile Include="Assets\code\terrain\Tile.cs" />
      <Compile Include="Assets\code\util\EnumerableUtil.cs" />
-     <Compile Include="Assets\code\util\GeometryUtil.cs" />
+     <Compile Include="Assets\code\util\MapPositionUtil.cs" />
      <Compile Include="Assets\code\util\Noise.cs" />
      <Compile Include="Assets\code\util\Perlin.cs" />
      <Compile Include="Assets\code\util\Position2D.cs" />
      <Compile Include="Assets\code\util\Position3D.cs" />
+     <Compile Include="Assets\code\util\RenderUtil.cs" />
      <Compile Include="Assets\code\util\UnityMeshInfo.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

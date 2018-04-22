@@ -28,6 +28,21 @@ namespace code.util
             return posistions;
         }
 
+        public Position3D getPositionPlusX(int delta)
+        {
+            return new Position3D(x + delta, y, z);
+        }
+
+        public Position3D getPositionPlusY(int delta)
+        {
+            return new Position3D(x, y + delta, z);
+        }
+
+        public Position3D getPositionPlusZ(int delta)
+        {
+            return new Position3D(x, y, z + delta);
+        }
+
         public override bool Equals(object obj)
         {
             var position = obj as Position3D;
@@ -59,9 +74,14 @@ namespace code.util
             return new Vector3(position3D.x * vector3.x, position3D.y * vector3.y, position3D.z * vector3.z);
         }
 
-        public static Vector3 operator *(Position3D position1, Position3D position2)
+        public static Position3D operator *(Position3D position1, Position3D position2)
         {
-            return new Vector3(position1.x * position2.x, position1.y * position2.y, position1.z * position2.z);
+            return new Position3D(position1.x * position2.x, position1.y * position2.y, position1.z * position2.z);
+        }
+
+        public static Position3D operator +(Position3D position1, Position3D position2)
+        {
+            return new Position3D(position1.x + position2.x, position1.y + position2.y, position1.z + position2.z);
         }
     }
 }

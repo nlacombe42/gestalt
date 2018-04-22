@@ -2,7 +2,7 @@ using AssemblyCSharp;
 using code.util;
 using UnityEngine;
 
-namespace code.terrain
+namespace code.map
 {
     public static class TerrainGenerator
     {

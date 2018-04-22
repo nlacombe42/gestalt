@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
+using code.objectscript;
 using code.util;
 using UnityEngine;
 
-namespace code.terrain
+namespace code.map
 {
     public class Chunk
     {
@@ -11,8 +13,11 @@ namespace code.terrain
         private static readonly Color Color = new Color(255, 255, 255);
         private static Chunk _instance;
 
+        private Dictionary<Position3D, GameObject> _renderedChunks;
+
         private Chunk()
         {
+            _renderedChunks = new Dictionary<Position3D, GameObject>();
         }
 
         public static Chunk Instance
@@ -20,27 +25,60 @@ namespace code.terrain
             get { return _instance ?? (_instance = new Chunk()); }
         }
 
-        public UnityMeshInfo GetChunkTerrainUnityMeshInfo(int[,] heightMap, Position3D chunkPosition)
+        public void Render(List<Position3D> chunkPositionsToRender)
         {
+            var chunkPositionsToCreate = chunkPositionsToRender.Where(chunkPositionToRender => !_renderedChunks.ContainsKey(chunkPositionToRender));
+
+            foreach (var chunkPosition in chunkPositionsToCreate)
+            {
+                var chunkTerrainUnityMeshInfo = GetChunkTerrainUnityMeshInfo(chunkPosition);
+
+                GameObject gameObject;
+
+                if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
+                    gameObject = null;
+                else
+                    gameObject = GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
+
+                _renderedChunks.Add(chunkPosition, gameObject);
+            }
+
+            var chunkPositionsToDelete = _renderedChunks
+                .Where(renderedChunkPair => !chunkPositionsToRender.Contains(renderedChunkPair.Key))
+                .Select(renderedChunkPair => renderedChunkPair.Key).ToList();
+
+            foreach (var chunkPositionToDelete in chunkPositionsToDelete)
+                Unrender(chunkPositionToDelete);
+        }
+
+        public void Unrender(Position3D chunkPosition)
+        {
+            Object.Destroy(_renderedChunks[chunkPosition]);
+            _renderedChunks.Remove(chunkPosition);
+        }
+
+        private UnityMeshInfo GetChunkTerrainUnityMeshInfo(Position3D chunkPosition)
+        {
+            var chunkTilePosition = chunkPosition * ChunkSize;
+
             var vertices = new List<Vector3>();
             var uvs = new List<Vector2>();
             var triangles = new List<int>();
 
-            for (var x = 0; x < heightMap.GetLength(0); x++)
-            for (var z = 0; z < heightMap.GetLength(1); z++)
-            for (var y = 0; y <= heightMap[x, z]; y++)
-                if (IsTileHeightInChunk(chunkPosition, y))
-                    Tile.AddCube(vertices, triangles, uvs, heightMap, new Position3D(x, y, z));
+            for (var x = 0; x < ChunkSize.x; x++)
+            for (var z = 0; z < ChunkSize.z; z++)
+            for (var y = 0; y < ChunkSize.y; y++)
+            {
+                var tilePosition = chunkTilePosition + new Position3D(x, y, z);
+                var tile = Map.Instance.GetTile(tilePosition);
 
-            var chunkTilePosition = chunkPosition * ChunkSize;
+                if (tile.TileType != TileType.Air)
+                    RenderUtil.AddCube(vertices, triangles, uvs, tilePosition);
+            }
+
             var position = new Vector3(chunkTilePosition.x * Tile.TileSize.x, chunkTilePosition.y * Tile.TileSize.y, chunkTilePosition.z * Tile.TileSize.z);
 
             return new UnityMeshInfo(vertices.ToArray(), triangles.ToArray(), uvs.ToArray(), Color, position);
-        }
-
-        private bool IsTileHeightInChunk(Position3D chunkPosition, int y)
-        {
-            return y > chunkPosition.y * ChunkSize.y && y < (chunkPosition.y + 1) * ChunkSize.y;
         }
     }
 }
