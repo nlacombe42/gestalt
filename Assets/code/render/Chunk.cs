@@ -15,10 +15,12 @@ namespace code.render
         private static Chunk _instance;
 
         private Dictionary<Position3D, GameObject> _renderedChunks;
+        private ElementLimitCache<Position3D, UnityMeshInfo> _chunkMeshInfoCache;
 
         private Chunk()
         {
             _renderedChunks = new Dictionary<Position3D, GameObject>();
+            _chunkMeshInfoCache = new ElementLimitCache<Position3D, UnityMeshInfo>(5*9);
         }
 
         public static Chunk Instance
@@ -26,39 +28,62 @@ namespace code.render
             get { return _instance ?? (_instance = new Chunk()); }
         }
 
-        public void Render(List<Position3D> chunkPositionsToRender)
+        public void RenderOnly(List<Position3D> chunkPositionsToRender)
         {
-            var chunkPositionsToCreate = chunkPositionsToRender.Where(chunkPositionToRender => !_renderedChunks.ContainsKey(chunkPositionToRender));
-
-            foreach (var chunkPosition in chunkPositionsToCreate)
-            {
-                var chunkTerrainUnityMeshInfo = GetChunkTerrainUnityMeshInfo(chunkPosition);
-
-                GameObject gameObject;
-
-                if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
-                    gameObject = null;
-                else
-                    gameObject = GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
-
-                _renderedChunks.Add(chunkPosition, gameObject);
-            }
+            var chunkPositionsToCreate = chunkPositionsToRender
+                .Where(chunkPositionToRender => !_renderedChunks.ContainsKey(chunkPositionToRender));
 
             var chunkPositionsToDelete = _renderedChunks
                 .Where(renderedChunkPair => !chunkPositionsToRender.Contains(renderedChunkPair.Key))
                 .Select(renderedChunkPair => renderedChunkPair.Key).ToList();
 
+            foreach (var chunkPosition in chunkPositionsToCreate)
+                Render(chunkPosition);
+
             foreach (var chunkPositionToDelete in chunkPositionsToDelete)
                 Unrender(chunkPositionToDelete);
         }
-
+        
         public void Unrender(Position3D chunkPosition)
         {
             Object.Destroy(_renderedChunks[chunkPosition]);
             _renderedChunks.Remove(chunkPosition);
         }
+        
+        public void Rerender(Position3D chunkPosition)
+        {
+            _chunkMeshInfoCache.Remove(chunkPosition);
+            Unrender(chunkPosition);
+        }
+        
+        private void Render(Position3D chunkPosition)
+        {
+            var chunkTerrainUnityMeshInfo = GetChunkTerrainUnityMeshInfo(chunkPosition);
+
+            GameObject gameObject;
+
+            if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
+                gameObject = null;
+            else
+                gameObject = GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
+
+            _renderedChunks.Add(chunkPosition, gameObject);
+        }
 
         private UnityMeshInfo GetChunkTerrainUnityMeshInfo(Position3D chunkPosition)
+        {
+            if (_chunkMeshInfoCache.ContainsKey(chunkPosition))
+                return _chunkMeshInfoCache[chunkPosition];
+           
+            var meshInfo = GenerateChunkTerrainUnityMeshInfo(chunkPosition);
+            
+            lock(_chunkMeshInfoCache)
+                _chunkMeshInfoCache[chunkPosition] = meshInfo;
+
+            return meshInfo;
+        }
+
+        private static UnityMeshInfo GenerateChunkTerrainUnityMeshInfo(Position3D chunkPosition)
         {
             var chunkTilePosition = chunkPosition * ChunkSize;
 
@@ -73,7 +98,7 @@ namespace code.render
                 var tilePosition = chunkTilePosition + new Position3D(x, y, z);
                 var tile = Map.Instance.GetTile(tilePosition);
 
-                if (tile.TileType != TileType.Air)
+                if (tile.TileType.Visible)
                     RenderUtil.AddCube(vertices, triangles, uvs, tilePosition);
             }
 

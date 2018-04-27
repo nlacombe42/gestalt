@@ -80,7 +80,7 @@ namespace code.objectscript
         {
             var playerChunkPosition = MapPositionUtil.GetChunkPosition(transform.position);
 
-            Chunk.Instance.Render(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
+            Chunk.Instance.RenderOnly(playerChunkPosition.GetPositionsInCubeRadius(1).ToList());
         }
 
         private void UpdatePlayerFromViewRotation()

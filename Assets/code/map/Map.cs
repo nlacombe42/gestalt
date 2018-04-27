@@ -32,12 +32,12 @@ namespace code.map
         {
             _tileMap[tilePosition] = tile;
             
-            Chunk.Instance.Unrender(MapPositionUtil.GetChunkPositionFromTilePosition(tilePosition));
+            Chunk.Instance.Rerender(MapPositionUtil.GetChunkPositionFromTilePosition(tilePosition));
         }
 
         public bool IsTransparent(Position3D tilePosition)
         {
-            return GetTile(tilePosition).TileType == TileType.Air;
+            return GetTile(tilePosition).TileType.Transparent;
         }
 
         private Tile GenerateTile(Position3D tilePosition)
