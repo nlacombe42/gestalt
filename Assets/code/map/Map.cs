@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using code.util;
+using code.render;
+using code.terrain;
 
 namespace code.map
 {

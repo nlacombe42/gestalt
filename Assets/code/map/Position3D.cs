@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace code.util
+namespace code.map
 {
     public class Position3D
     {

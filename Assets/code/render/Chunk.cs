@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using code.map;
 using code.objectscript;
 using code.util;
 using UnityEngine;
 
-namespace code.map
+namespace code.render
 {
     public class Chunk
     {

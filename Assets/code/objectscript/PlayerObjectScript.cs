@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using code.map;
-using code.util;
+using code.render;
+using code.terrain;
 using UnityEngine;
 
 namespace code.objectscript

@@ -1,8 +1,8 @@
-using AssemblyCSharp;
+using code.map;
 using code.util;
 using UnityEngine;
 
-namespace code.map
+namespace code.terrain
 {
     public static class TerrainGenerator
     {

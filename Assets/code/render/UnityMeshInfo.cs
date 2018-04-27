@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace code.util
+namespace code.render
 {
     public class UnityMeshInfo
     {

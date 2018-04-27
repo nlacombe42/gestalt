@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AssemblyCSharp
+namespace code.util
 {
 	public class Perlin
     {
@@ -49,7 +49,7 @@ namespace AssemblyCSharp
 		static Perlin()
         {
             perm = new byte[permOriginal.Length];
-			Perlin.permOriginal.CopyTo(perm, 0);
+			permOriginal.CopyTo(perm, 0);
         }
 
         public static int Seed
@@ -60,7 +60,7 @@ namespace AssemblyCSharp
                 if (value == 0)
                 {
                     perm = new byte[permOriginal.Length];
-					Perlin.permOriginal.CopyTo(perm, 0);
+					permOriginal.CopyTo(perm, 0);
                 }
                 else
                 {

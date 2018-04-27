@@ -1,7 +1,7 @@
-using code.map;
+using code.render;
 using UnityEngine;
 
-namespace code.util
+namespace code.map
 {
     public static class MapPositionUtil
     {

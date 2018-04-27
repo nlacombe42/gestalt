@@ -1,6 +1,4 @@
-﻿using code.util;
-
-namespace code.map
+﻿namespace code.map
 {
     public class TileType
     {

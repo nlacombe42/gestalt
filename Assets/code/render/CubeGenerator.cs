@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using code.util;
+using code.map;
 using UnityEngine;
 
-namespace code.map
+namespace code.render
 {
     public static class CubeGenerator
     {

@@ -1,4 +1,4 @@
-namespace code.util
+namespace code.map
 {
     public class Position2D
     {

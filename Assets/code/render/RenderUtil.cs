@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using code.map;
 using UnityEngine;
 
-namespace code.util
+namespace code.render
 {
     public static class RenderUtil
     {
