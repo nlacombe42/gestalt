@@ -1,9 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using code.gui;
 using code.map;
 using code.objectscript;
 using code.util;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace code.render
 {
@@ -16,11 +20,17 @@ namespace code.render
 
         private Dictionary<Position3D, GameObject> _renderedChunks;
         private ElementLimitCache<Position3D, UnityMeshInfo> _chunkMeshInfoCache;
+        private Queue<Position3D> _chunkMeshInfoToGenerate;
+        private List<Position3D> _chunksToRerender;
 
         private Chunk()
         {
             _renderedChunks = new Dictionary<Position3D, GameObject>();
-            _chunkMeshInfoCache = new ElementLimitCache<Position3D, UnityMeshInfo>(5*9);
+            _chunkMeshInfoCache = new ElementLimitCache<Position3D, UnityMeshInfo>(5 * 9);
+            _chunkMeshInfoToGenerate = new Queue<Position3D>();
+            _chunksToRerender = new List<Position3D>();
+
+            new Thread(ChunkMeshInfoGeneration).Start();
         }
 
         public static Chunk Instance
@@ -28,10 +38,18 @@ namespace code.render
             get { return _instance ?? (_instance = new Chunk()); }
         }
 
-        public void RenderOnly(List<Position3D> chunkPositionsToRender)
+        public void RenderOnly(List<Position3D> chunkPositionsToRender, ProgressBar progressBar = null, Action allChunksRenderedCallback = null)
         {
-            var chunkPositionsToCreate = chunkPositionsToRender
-                .Where(chunkPositionToRender => !_renderedChunks.ContainsKey(chunkPositionToRender));
+            List<Position3D> chunkPositionsToCreate;
+
+            lock (_chunkMeshInfoToGenerate)
+            {
+                chunkPositionsToCreate = chunkPositionsToRender
+                    .Where(chunkPositionToRender => _chunksToRerender.Contains(chunkPositionToRender) ||
+                                                    !_renderedChunks.ContainsKey(chunkPositionToRender) &&
+                                                    !_chunkMeshInfoToGenerate.Contains(chunkPositionToRender))
+                    .ToList();
+            }
 
             var chunkPositionsToDelete = _renderedChunks
                 .Where(renderedChunkPair => !chunkPositionsToRender.Contains(renderedChunkPair.Key))
@@ -42,45 +60,112 @@ namespace code.render
 
             foreach (var chunkPositionToDelete in chunkPositionsToDelete)
                 Unrender(chunkPositionToDelete);
+
+            UpdateChunkRenderProgress(chunkPositionsToRender, progressBar, allChunksRenderedCallback);
         }
-        
+
         public void Unrender(Position3D chunkPosition)
         {
             Object.Destroy(_renderedChunks[chunkPosition]);
             _renderedChunks.Remove(chunkPosition);
         }
-        
+
         public void Rerender(Position3D chunkPosition)
         {
-            _chunkMeshInfoCache.Remove(chunkPosition);
-            Unrender(chunkPosition);
+            lock (_chunkMeshInfoCache)
+                _chunkMeshInfoCache.Remove(chunkPosition);
+
+            _chunksToRerender.Add(chunkPosition);
         }
-        
+
+        private void UpdateChunkRenderProgress(List<Position3D> chunkPositionsToRender, ProgressBar progressBar, Action allChunksRenderedCallback)
+        {
+            if (progressBar == null && allChunksRenderedCallback == null)
+                return;
+
+            new Thread(delegate()
+            {
+                while (true)
+                {
+                    int numberOfUnrenderedChunks;
+
+                    lock (_chunkMeshInfoToGenerate)
+                        numberOfUnrenderedChunks = _chunkMeshInfoToGenerate.Intersect(chunkPositionsToRender).Count();
+
+                    if (progressBar != null)
+                    {
+                        lock (progressBar)
+                            progressBar.Progress = (float) (chunkPositionsToRender.Count - numberOfUnrenderedChunks) / chunkPositionsToRender.Count;
+                    }
+
+                    if (numberOfUnrenderedChunks == 0)
+                    {
+                        if (allChunksRenderedCallback != null)
+                            allChunksRenderedCallback();
+
+                        return;
+                    }
+
+                    Thread.Sleep(100);
+                }
+            }).Start();
+        }
+
         private void Render(Position3D chunkPosition)
         {
-            var chunkTerrainUnityMeshInfo = GetChunkTerrainUnityMeshInfo(chunkPosition);
+            UnityMeshInfo chunkTerrainUnityMeshInfo;
+            
 
-            GameObject gameObject;
+            lock (_chunkMeshInfoCache)
+            {
+                chunkTerrainUnityMeshInfo = _chunkMeshInfoCache.ContainsKey(chunkPosition) ? _chunkMeshInfoCache[chunkPosition] : null;
+            }
+            
+            if (chunkTerrainUnityMeshInfo != null)
+            {
+                if (_renderedChunks.ContainsKey(chunkPosition))
+                    Unrender(chunkPosition);
 
-            if (chunkTerrainUnityMeshInfo.Triangles.Length <= 0)
-                gameObject = null;
+                var gameObject = chunkTerrainUnityMeshInfo.Triangles.Length <= 0 ? null : GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
+
+                _renderedChunks.Add(chunkPosition, gameObject);
+
+                if (_chunksToRerender.Contains(chunkPosition))
+                {
+                    _chunksToRerender.Remove(chunkPosition);
+                }
+            }
             else
-                gameObject = GameObjectScript.CreateGameObject("TerrainChunk", chunkTerrainUnityMeshInfo);
-
-            _renderedChunks.Add(chunkPosition, gameObject);
+            {
+                lock (_chunkMeshInfoToGenerate)
+                {
+                    if (!_chunkMeshInfoToGenerate.Contains(chunkPosition))
+                        _chunkMeshInfoToGenerate.Enqueue(chunkPosition);
+                }
+            }
         }
 
-        private UnityMeshInfo GetChunkTerrainUnityMeshInfo(Position3D chunkPosition)
+        private void ChunkMeshInfoGeneration()
         {
-            if (_chunkMeshInfoCache.ContainsKey(chunkPosition))
-                return _chunkMeshInfoCache[chunkPosition];
-           
-            var meshInfo = GenerateChunkTerrainUnityMeshInfo(chunkPosition);
-            
-            lock(_chunkMeshInfoCache)
-                _chunkMeshInfoCache[chunkPosition] = meshInfo;
+            while (true)
+            {
+                Position3D chunkPosition;
 
-            return meshInfo;
+                lock (_chunkMeshInfoToGenerate)
+                    chunkPosition = _chunkMeshInfoToGenerate.Count > 0 ? _chunkMeshInfoToGenerate.Dequeue() : null;
+
+                if (chunkPosition == null)
+                    Thread.Sleep(100);
+                else
+                {
+                    Debug.Log("rendering: " + chunkPosition);
+                    
+                    var meshInfo = GenerateChunkTerrainUnityMeshInfo(chunkPosition);
+
+                    lock (_chunkMeshInfoCache)
+                        _chunkMeshInfoCache[chunkPosition] = meshInfo;
+                }
+            }
         }
 
         private static UnityMeshInfo GenerateChunkTerrainUnityMeshInfo(Position3D chunkPosition)

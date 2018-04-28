@@ -413,3 +413,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 467e131a0d85743c7a384f3ee59efc46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  progressBarEmpty: {fileID: 2800000, guid: d2b15401bb00fa6439f2d20f1091ba76, type: 3}
+  progressBarFull: {fileID: 2800000, guid: 6e4b8640b038542449646a0f33cd80a3, type: 3}

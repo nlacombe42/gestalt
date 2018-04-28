@@ -51,6 +51,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\code\gui\ProgressBar.cs" />
      <Compile Include="Assets\code\map\Map.cs" />
      <Compile Include="Assets\code\map\MapPositionUtil.cs" />
      <Compile Include="Assets\code\map\Position2D.cs" />
@@ -68,6 +69,7 @@
      <Compile Include="Assets\code\util\Noise.cs" />
      <Compile Include="Assets\code\util\ObjectLimitCache.cs" />
      <Compile Include="Assets\code\util\Perlin.cs" />
+     <Compile Include="Assets\code\util\TextureUtil.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/opt/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

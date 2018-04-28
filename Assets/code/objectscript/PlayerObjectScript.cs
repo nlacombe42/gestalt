@@ -11,21 +11,42 @@ namespace code.objectscript
     {
         private const float MouseSensitivity = 100.0f;
 
+        private static PlayerObjectScript _instance;
+        
         private Camera _playerCamera;
         private Rigidbody _playerRigidbody;
+        private Vector3 _positionToSet;
+        private bool _hasPositionToSet;
+
+        public static PlayerObjectScript Instance
+        {
+            get { return _instance; }
+        }
+
+        public void setPosition(Vector3 position)
+        {
+            _positionToSet = position;
+            _hasPositionToSet = true;
+        }
 
         private void Start()
         {
+            _instance = this;
+            
             _playerCamera = transform.Find("player camera").GetComponent<Camera>();
             _playerRigidbody = GetComponent<Rigidbody>();
 
             Cursor.lockState = CursorLockMode.Locked;
-
-            SetPlayerInitialPosition();
         }
         
         private void Update ()
         {
+            if (_hasPositionToSet)
+            {
+                transform.position = _positionToSet;
+                _hasPositionToSet = false;
+            }
+            
             HandlePlayerClick();
             RenderChunksNearPlayer();
         }
@@ -57,18 +78,6 @@ namespace code.objectscript
         private void OnGUI()
         {
             GUI.Box(new Rect(Screen.width / 2f, Screen.height / 2f, 10, 10), "");
-        }
-
-        private void SetPlayerInitialPosition()
-        {
-            var playerPosition = new Vector3
-            {
-                x = 12 * Tile.TileSize.x + Tile.TileSize.x / 2,
-                y = TerrainGenerator.getHeight(12, 12) * Tile.TileSize.y + Tile.TileSize.y * 5,
-                z = 12 * Tile.TileSize.z + Tile.TileSize.z / 2
-            };
-
-            transform.position = playerPosition;
         }
 
         private bool IsGrounded()
