@@ -17,16 +17,29 @@ namespace code.objectscript
         private Rigidbody _playerRigidbody;
         private Vector3 _positionToSet;
         private bool _hasPositionToSet;
+        private bool _freezePosition;
+        private bool _unfreezePosition;
 
         public static PlayerObjectScript Instance
         {
             get { return _instance; }
         }
 
-        public void setPosition(Vector3 position)
+        public void SetPosition(Vector3 position)
         {
             _positionToSet = position;
             _hasPositionToSet = true;
+        }
+
+        public void FreezePosition()
+        {
+            _freezePosition = true;
+            
+        }
+        
+        public void UnfreezePosition()
+        {
+            _unfreezePosition = true;
         }
 
         private void Start()
@@ -45,6 +58,18 @@ namespace code.objectscript
             {
                 transform.position = _positionToSet;
                 _hasPositionToSet = false;
+            }
+
+            if (_freezePosition)
+            {
+                _playerRigidbody.constraints |= RigidbodyConstraints.FreezePositionY;
+                _freezePosition = false;
+            }
+            
+            if(_unfreezePosition)
+            {
+                _playerRigidbody.constraints ^= RigidbodyConstraints.FreezePositionY;
+                _unfreezePosition = false;
             }
             
             HandlePlayerClick();

@@ -19,8 +19,14 @@ namespace code.objectscript
 
             var initialPlayerPosition = getInitialPlayerPosition();
             var chunkPositionsToRender = MapPositionUtil.GetChunkPosition(initialPlayerPosition).GetPositionsInCubeRadius(1).ToList();
+            
+            PlayerObjectScript.Instance.FreezePosition();
+            PlayerObjectScript.Instance.SetPosition(initialPlayerPosition);
 
-            Chunk.Instance.RenderOnly(chunkPositionsToRender, _progressBar, () => { PlayerObjectScript.Instance.setPosition(initialPlayerPosition); });
+            Chunk.Instance.RenderOnly(chunkPositionsToRender, _progressBar, () =>
+            {
+                PlayerObjectScript.Instance.UnfreezePosition();
+            });
         }
 
         private void DisplayProgressBar()

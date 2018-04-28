@@ -158,8 +158,6 @@ namespace code.render
                     Thread.Sleep(100);
                 else
                 {
-                    Debug.Log("rendering: " + chunkPosition);
-                    
                     var meshInfo = GenerateChunkTerrainUnityMeshInfo(chunkPosition);
 
                     lock (_chunkMeshInfoCache)
